@@ -1,0 +1,200 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #302b2b;
+  font-family: "Poppins", sans-serif;
+}
+
+#main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#addPerson {
+  float: right;
+  animation: illuminate 3s;
+  margin: 10px 10px 0 0;
+}
+
+@keyframes illuminate {
+  20% {
+    transform: scale(1.2);
+    box-shadow: 0px 0px 40px blue;
+  }
+
+  40% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+
+  60% {
+    transform: scale(1.2);
+    box-shadow: 0px 0px 40px blue;
+  }
+
+  80% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+
+  100% {
+    transform: scale(1.2);
+    box-shadow: 0px 0px 40px blue;
+  }
+}
+
+p {
+  font-size: 0.8em;
+}
+
+h2 {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.name-label {
+  background-color: rgb(103, 232, 255);
+  border-radius: 5px 20px 0 0;
+  width: 50%;
+  float: left;
+}
+
+.person-div {
+  padding: 5px;
+}
+
+.dummy {
+  opacity: 0.5;
+  animation: blink 3s;
+}
+
+@keyframes blink {
+  20% {
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  60% {
+    opacity: 0;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.person-btn {
+  margin-left: 5px;
+}
+
+button {
+  border-radius: 5px;
+}
+
+#div-total-weight {
+  width: 70%;
+  margin: auto;
+  margin-top: 10px;
+}
+
+#tanggalNow,
+footer {
+  margin-top: 10px;
+  color: rgb(101, 198, 255);
+}
+
+.main-div {
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  background-color: rgb(250, 255, 202);
+  border: 2px solid rgb(101, 90, 255);
+  padding: 10px;
+}
+
+.yellowed {
+  color: rgb(250, 255, 202);
+}
+
+.img-btn {
+  padding: 0;
+  display: flex;
+  float: right;
+  margin-left: 10px;
+}
+
+.check-img {
+  transform: scale(0.6);
+}
+
+.detail-input-div {
+  display: flex;
+  justify-content: space-around;
+  padding: 5px;
+}
+
+#detail-result-div {
+  border: 2px solid;
+  margin-top: 10px;
+}
+
+#detailBtn {
+  margin: auto;
+  margin-top: 5px;
+  display: block;
+}
+
+.sub-result-div {
+  font-family: monospace;
+  font-size: 0.8em;
+  color: rgb(126, 180, 255);
+  margin: 3px;
+  padding: 5px;
+  border: 2px solid blue;
+  background-color: rgb(255, 255, 255);
+}
+
+.result-text {
+  color: #121212;
+  font-size: 1.5em;
+}
+
+.highlight {
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+.focus *:not(button):focus {
+  background-color: rgb(255, 175, 238);
+  color: #121212;
+}
+
+#total {
+  text-shadow: 3px -3px 15px blue;
+  float: right;
+  font-size: 2em;
+}
