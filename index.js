@@ -1,48 +1,44 @@
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var App = function App() {
-  var _React$useState = React.useState(1),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      personNumber = _React$useState2[0],
-      setpersonNumber = _React$useState2[1];
+  var _React$useReducer = React.useReducer(dataReducer, {
+    total: 0,
+    price: { perkg: 0, percent: 0 },
+    personData: {}
+  }),
+      _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
+      data = _React$useReducer2[0],
+      dispatchData = _React$useReducer2[1];
 
-  var _React$useState3 = React.useState(0),
-      _React$useState4 = _slicedToArray(_React$useState3, 2),
-      total = _React$useState4[0],
-      setTotal = _React$useState4[1];
+  function getPrice(e) {
+    dispatchData({ type: "SET_PRICE", payload: e });
+  }
 
-  var _React$useState5 = React.useState({ perkg: 0, percent: 0 }),
-      _React$useState6 = _slicedToArray(_React$useState5, 2),
-      price = _React$useState6[0],
-      setPrice = _React$useState6[1];
-
-  var _React$useState7 = React.useState({}),
-      _React$useState8 = _slicedToArray(_React$useState7, 2),
-      personData = _React$useState8[0],
-      setPersonData = _React$useState8[1];
-
-  var getPrice = function getPrice(e) {
-    setPrice({ perkg: e.target[0].value, percent: e.target[1].value });
-  };
-
-  var getPersonData = function getPersonData(x, name, val) {
-    setPersonData(function (prev) {
-      return Object.assign({}, prev, _defineProperty({}, x, { id: name, value: val }));
+  function addList(x, name, val) {
+    dispatchData({
+      type: "SET_PERSON_DATA",
+      payload: { id: x, name: name, value: val }
     });
-  };
+  }
+
+  function removeList(x) {
+    dispatchData({
+      type: "REMOVE_PERSON_DATA",
+      payload: x
+    });
+  }
 
   React.useEffect(function () {
-    console.log("app");
     var total = 0;
-    for (var i in personData) {
-      total += parseInt(personData[i]["value"]);
+    for (var i in data.personData) {
+      total += parseInt(data.personData[i]["value"]);
     }
-    setTotal(function () {
-      return total;
-    });
-  }, [personData, setTotal]);
+    dispatchData({ type: "SET_TOTAL", payload: total });
+  }, [data.personData]);
 
   return React.createElement(
     React.Fragment,
@@ -62,81 +58,78 @@ var App = function App() {
       { id: "main" },
       React.createElement(
         "div",
-        { className: "main-div" },
+        { className: "main-div wider" },
+        React.createElement(InputPerson, { addList: addList, removeList: removeList }),
         React.createElement(
           "div",
-          { className: "clearfix" },
+          { id: "div-total-weight" },
           React.createElement(
-            Button,
-            { handleClick: function handleClick() {
-                return setpersonNumber(function (x) {
-                  return x + 1;
-                });
-              } },
-            "+"
+            "p",
+            { className: "highlight", style: { fontSize: "1.7em" } },
+            "Total"
+          ),
+          React.createElement(
+            "p",
+            { id: "total" },
+            data.total,
+            " kg"
           )
-        ),
-        React.createElement(InputPerson, {
-          personNumber: personNumber,
-          getPersonData: getPersonData
-        }),
-        React.createElement(
-          "h2",
-          null,
-          "Total: ",
-          total,
-          " kg"
         )
       ),
       React.createElement(
         "div",
-        { className: "main-div" },
+        { className: "main-div wider" },
         React.createElement(DetailInput, { getPrice: getPrice }),
-        React.createElement(DetailResult, { price: price, total: total, personData: personData })
+        React.createElement(DetailResult, {
+          price: data.price,
+          total: data.total,
+          personData: data.personData
+        })
       )
     )
   );
 };
 
-var Button = function Button(_ref) {
-  var btnName = _ref.btnName,
-      handleClick = _ref.handleClick,
-      children = _ref.children;
+function dataReducer(state, action) {
+  switch (action.type) {
+    case "SET_TOTAL":
+      return Object.assign({}, state, { total: action.payload });
 
-  return React.createElement(
-    "button",
-    { type: "button", onClick: handleClick },
-    btnName || children
-  );
+    case "SET_PRICE":
+      return Object.assign({}, state, {
+        price: {
+          perkg: action.payload.target[0].value,
+          percent: action.payload.target[1].value
+        }
+      });
+
+    case "SET_PERSON_DATA":
+      return Object.assign({}, state, {
+        personData: Object.assign({}, state.personData, _defineProperty({}, action.payload.id, action.payload))
+      });
+
+    case "REMOVE_PERSON_DATA":
+      return Object.assign({}, state, {
+        personData: Object.filter(state.personData, function (s) {
+          return s.id !== action.payload;
+        })
+      });
+
+    default:
+      throw new Error();
+  }
+}
+
+Object.filter = function (obj, predicate) {
+  return Object.keys(obj).filter(function (key) {
+    return predicate(obj[key]);
+  }).reduce(function (res, key) {
+    return Object.assign(res, _defineProperty({}, key, obj[key]));
+  }, {});
 };
 
-var DateToday = function DateToday() {
-  var tgl = new Date();
-  var months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-  var day = ["Minggu", "Senin", "Selasa", "Rabu", " Kamis", "Jumat", "Sabtu"];
-
-  return React.createElement(
-    "p",
-    null,
-    "Tanggal:",
-    " ",
-    React.createElement(
-      "strong",
-      null,
-      day[tgl.getDay()],
-      ", ",
-      tgl.getDate(),
-      " ",
-      months[tgl.getMonth()],
-      " ",
-      tgl.getFullYear(),
-      " "
-    )
-  );
-};
-
-var DetailInput = function DetailInput(_ref2) {
-  var getPrice = _ref2.getPrice;
+function DetailInput(_ref) {
+  var getPrice = _ref.getPrice;
 
   var handleResult = function handleResult(e) {
     e.preventDefault();
@@ -189,12 +182,12 @@ var DetailInput = function DetailInput(_ref2) {
       React.createElement("input", { id: "detailBtn", type: "submit", value: "submit" })
     )
   );
-};
+}
 
-var DetailResult = function DetailResult(_ref3) {
-  var price = _ref3.price,
-      total = _ref3.total,
-      personData = _ref3.personData;
+function DetailResult(_ref2) {
+  var price = _ref2.price,
+      total = _ref2.total,
+      personData = _ref2.personData;
 
   var totalPrice = price.perkg * total;
   var percent = price.percent * 0.01;
@@ -209,17 +202,17 @@ var DetailResult = function DetailResult(_ref3) {
 
     try {
       for (var _iterator = Object.entries(personData)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var _ref4 = _step.value;
+        var _ref3 = _step.value;
 
-        var _ref5 = _slicedToArray(_ref4, 2);
+        var _ref4 = _slicedToArray(_ref3, 2);
 
-        var key = _ref5[0];
-        var value = _ref5[1];
+        var key = _ref4[0];
+        var value = _ref4[1];
 
         person.push({
-          name: value.id,
+          name: value.name,
           value: totalPrice * percent * value.value / total,
-          key: key
+          key: value.id
         });
       }
     } catch (err) {
@@ -243,33 +236,29 @@ var DetailResult = function DetailResult(_ref3) {
     { id: "detail-result-div" },
     React.createElement(
       SubDR,
-      { title: "Hasil total" },
+      { key: "Hasil total", title: "Hasil total" },
       "Rp",
       totalPrice.toLocaleString("id-ID")
     ),
     React.createElement(
       SubDR,
-      { title: "Pendapatan" },
+      { key: "Pendapatan", title: "Pendapatan" },
       "Rp",
       percentPrice.toLocaleString("id-ID")
     ),
     React.createElement(
       SubDR,
-      { title: "Pendapatan per pihak" },
-      React.createElement(PerPerson, { person: person })
+      { key: "per pihak", title: "Pendapatan per pihak" },
+      person.map(function (x) {
+        return React.createElement(ListPerson, { x: x, key: "list_" + x.key });
+      })
     )
   );
-};
+}
 
-var PerPerson = function PerPerson(_ref6) {
-  var person = _ref6.person;
-  return person.map(function (x) {
-    return React.createElement(ListPerson, { x: x, key: x.key });
-  });
-};
+function ListPerson(_ref5) {
+  var x = _ref5.x;
 
-var ListPerson = function ListPerson(_ref7) {
-  var x = _ref7.x;
   return React.createElement(
     React.Fragment,
     null,
@@ -280,16 +269,17 @@ var ListPerson = function ListPerson(_ref7) {
       ": Rp",
       x.value.toLocaleString("id-ID")
     ),
-    React.createElement("br", null)
+    React.createElement("hr", null)
   );
-};
+}
 
-var SubDR = function SubDR(_ref8) {
-  var children = _ref8.children,
-      title = _ref8.title;
+function SubDR(_ref6) {
+  var children = _ref6.children,
+      title = _ref6.title;
+
   return React.createElement(
     "div",
-    null,
+    { className: "sub-dr" },
     React.createElement(
       "p",
       { className: "highlight" },
@@ -305,42 +295,120 @@ var SubDR = function SubDR(_ref8) {
       )
     )
   );
+}
+
+var InputPerson = function InputPerson(_ref7) {
+  var addList = _ref7.addList,
+      removeList = _ref7.removeList;
+
+  var _React$useReducer3 = React.useReducer(listReducer, [{ key: 0 }]),
+      _React$useReducer4 = _slicedToArray(_React$useReducer3, 2),
+      personList = _React$useReducer4[0],
+      dispatch = _React$useReducer4[1];
+
+  function handleAddList(x, name, val) {
+    addList(x, name, val);
+  }
+
+  function handleRemoveList(x) {
+    removeList(x);
+  }
+
+  function addPerson() {
+    dispatch({ type: "ADD" });
+  }
+
+  function removePerson(index) {
+    dispatch({ type: "REMOVE", payload: index });
+  }
+
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      { className: "clearfix" },
+      React.createElement(
+        MyButton,
+        { handleClick: addPerson },
+        "+"
+      )
+    ),
+    personList.map(function (p) {
+      return React.createElement(PersonObj, {
+        key: "person_" + (p.key + 1),
+        i: p.key,
+        addList: handleAddList,
+        removeList: handleRemoveList,
+        removePerson: removePerson
+      });
+    })
+  );
 };
 
-var PersonObj = function PersonObj(_ref9) {
-  var i = _ref9.i,
-      setValue = _ref9.setValue;
+function listReducer(state, action) {
+  switch (action.type) {
+    case "ADD":
+      var sleng = state.length;
+      return [].concat(_toConsumableArray(state), [{
+        key: sleng !== 0 ? state[sleng - 1].key + 1 : sleng
+      }]);
 
-  var _React$useState9 = React.useState(""),
-      _React$useState10 = _slicedToArray(_React$useState9, 2),
-      personName = _React$useState10[0],
-      setPersonName = _React$useState10[1];
-
-  var _React$useState11 = React.useState(""),
-      _React$useState12 = _slicedToArray(_React$useState11, 2),
-      personInput = _React$useState12[0],
-      setPersonInput = _React$useState12[1];
-
-  var _React$useState13 = React.useState(0),
-      _React$useState14 = _slicedToArray(_React$useState13, 2),
-      personValue = _React$useState14[0],
-      setPersonValue = _React$useState14[1];
-
-  var sum = function sum() {
-    setPersonValue(function () {
-      var val = personInput.split(",").reduce(function (t, v) {
-        return parseInt(t) + parseInt(v);
+    case "REMOVE":
+      return state.filter(function (s) {
+        return state[state.indexOf(s)].key !== action.payload;
       });
-      return isNaN(val) ? alert("not a number") : val;
+
+    default:
+      throw new Error();
+  }
+}
+
+var PersonObj = function PersonObj(_ref8) {
+  var i = _ref8.i,
+      addList = _ref8.addList,
+      removeList = _ref8.removeList,
+      removePerson = _ref8.removePerson;
+
+  var _React$useReducer5 = React.useReducer(personObjReducer, {
+    name: "",
+    input: "",
+    value: 0
+  }),
+      _React$useReducer6 = _slicedToArray(_React$useReducer5, 2),
+      personObj = _React$useReducer6[0],
+      dispatchPerson = _React$useReducer6[1];
+
+  function sum() {
+    dispatchPerson({
+      type: "SET_VALUE",
+      payload: function payload() {
+        var val = personObj.input.split(",").reduce(function (t, v) {
+          return parseInt(t) + parseInt(v);
+        });
+        return isNaN(val) ? alert("not a number") : val;
+      }
     });
-  };
+  }
+
+  function handleName(e) {
+    dispatchPerson({ type: "SET_NAME", payload: e.target.value });
+  }
+  function handleInput(e) {
+    dispatchPerson({ type: "SET_INPUT", payload: e.target.value });
+  }
+
+  function handleRemove(i) {
+    removePerson(i);
+    removeList(i);
+  }
 
   React.useEffect(function () {
-    if (personValue || personName) {
-      setValue(i, personName, personValue);
+    if (personObj.value) {
+      addList(i, personObj.name, personObj.value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [personName, personValue]);
+  }, [personObj.name, personObj.value]);
 
   return React.createElement(
     "div",
@@ -350,9 +418,14 @@ var PersonObj = function PersonObj(_ref9) {
       className: "name-label",
       placeholder: "nama",
       type: "text",
-      value: personName,
-      onChange: function onChange(e) {
-        return setPersonName(e.target.value);
+      value: personObj.name,
+      onChange: handleName
+    }),
+    React.createElement(MyButton, {
+      className: "clearfix",
+      btnName: "x",
+      handleClick: function handleClick() {
+        return handleRemove(i);
       }
     }),
     React.createElement("br", null),
@@ -361,37 +434,71 @@ var PersonObj = function PersonObj(_ref9) {
       name: "value",
       id: "value_" + i,
       placeholder: "10, 25, 31, ...",
-      value: personInput,
-      onChange: function onChange(e) {
-        return setPersonInput(e.target.value);
-      }
+      value: personObj.input,
+      onChange: handleInput
     }),
-    React.createElement(Button, { btnName: "submit", handleClick: sum }),
+    React.createElement(MyButton, { btnName: "submit", handleClick: sum }),
     React.createElement(
       "p",
       null,
-      personValue,
+      personObj.value,
       " kg"
     )
   );
 };
 
-var InputPerson = function InputPerson(_ref10) {
-  var personNumber = _ref10.personNumber,
-      getPersonData = _ref10.getPersonData;
+function personObjReducer(state, action) {
+  switch (action.type) {
+    case "SET_NAME":
+      return Object.assign({}, state, { name: action.payload });
 
-  var person = [personNumber];
+    case "SET_INPUT":
+      return Object.assign({}, state, { input: action.payload });
 
-  var setValue = function setValue(x, name, val) {
-    getPersonData(x, name, val);
-  };
+    case "SET_VALUE":
+      return Object.assign({}, state, { value: action.payload() });
 
-  for (var i = 0; i < personNumber; i++) {
-    person[i] = React.createElement(PersonObj, { key: i, i: i, setValue: setValue });
+    default:
+      throw new Error();
   }
+}
 
-  return person;
-};
+function MyButton(_ref9) {
+  var btnName = _ref9.btnName,
+      handleClick = _ref9.handleClick,
+      children = _ref9.children;
+
+  return React.createElement(
+    "button",
+    { type: "button", onClick: handleClick },
+    btnName || children
+  );
+}
+
+function DateToday() {
+  var tgl = new Date();
+  var months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  var day = ["Minggu", "Senin", "Selasa", "Rabu", " Kamis", "Jumat", "Sabtu"];
+
+  return React.createElement(
+    "p",
+    null,
+    "Tanggal:",
+    " ",
+    React.createElement(
+      "strong",
+      null,
+      day[tgl.getDay()],
+      ", ",
+      tgl.getDate(),
+      " ",
+      months[tgl.getMonth()],
+      " ",
+      tgl.getFullYear(),
+      " "
+    )
+  );
+}
 
 ReactDOM.render(React.createElement(
   React.StrictMode,

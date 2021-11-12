@@ -55,7 +55,7 @@ body {
 }
 
 p {
-  font-size: 0.8em;
+  font-size: 1em;
 }
 
 h2 {
@@ -110,8 +110,10 @@ h2 {
   margin-left: 5px;
 }
 
-button {
+button,
+input[type="submit"] {
   border-radius: 5px;
+  background-color: rgb(204, 204, 255);
 }
 
 #div-total-weight {
@@ -134,6 +136,7 @@ footer {
   background-color: rgb(250, 255, 202);
   border: 2px solid rgb(101, 90, 255);
   padding: 10px;
+  border-radius: 1em;
 }
 
 .yellowed {
@@ -160,6 +163,8 @@ footer {
 #detail-result-div {
   border: 2px solid;
   margin-top: 10px;
+  border-radius: 1em;
+  padding: 0.5em;
 }
 
 #detailBtn {
@@ -176,6 +181,7 @@ footer {
   padding: 5px;
   border: 2px solid blue;
   background-color: rgb(255, 255, 255);
+  border-radius: 0.5em;
 }
 
 .result-text {
@@ -184,8 +190,10 @@ footer {
 }
 
 .highlight {
+  font-size: 0.8em;
   margin-left: 5px;
   font-weight: bold;
+  color: rgb(92, 89, 89);
 }
 
 .focus *:not(button):focus {
@@ -194,7 +202,15 @@ footer {
 }
 
 #total {
-  text-shadow: 3px -3px 15px blue;
   float: right;
   font-size: 2em;
+}
+
+.sub-dr {
+  margin-bottom: 15px;
+}
+
+.wider {
+  width: 260px;
+  max-width: 300px;
 }
